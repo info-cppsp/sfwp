@@ -18,8 +18,7 @@ import reactor.core.publisher.Flux;
 @EnableJpaRepositories
 public class Application {
 
-	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus"};
-//	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus", "Listing"};
+	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus", "Listing"};
 	private static int successCounter = 0;
 
 	@Autowired

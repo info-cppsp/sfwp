@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class Listing {
 	private int quantity;
 	private int listing_status;
 	private int marketplace;
+	@JsonFormat(pattern="MM/dd/yyyy")
 	private Date upload_time;
 	private String owner_email_address;
 
