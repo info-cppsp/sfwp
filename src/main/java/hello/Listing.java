@@ -4,14 +4,19 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Entity
 public class Listing {
 
+	@Id
 	private UUID id;
 	private String title;
 	private String description;
