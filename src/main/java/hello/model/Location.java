@@ -1,4 +1,6 @@
-package hello;
+package hello.model;
+
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,10 +16,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-public class Marketplace {
+public class Location {
 
 	@Id
-	private int id;
-	private String marketplace_name;
+	private UUID id;
+	private String manager_name;
+	private String phone;
+	private String address_primary;
+	private String address_secondary;
+	private String country;
+	private String town;
+	private String postal_code;
 
 }

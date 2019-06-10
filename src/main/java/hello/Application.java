@@ -36,7 +36,7 @@ public class Application {
 
 			for (String string : API_CLASS_NAMES) {
 
-				Class<?> clazz = Class.forName("hello." + string);
+				Class<?> clazz = Class.forName("hello.model." + string);
 			    Flux<?> result = MyRestPublisherBuilder.getFluxForApiClass(clazz);
 				result.subscribe(entity -> {
 
