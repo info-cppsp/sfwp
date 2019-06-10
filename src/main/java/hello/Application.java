@@ -1,5 +1,7 @@
 package hello;
 
+import java.lang.reflect.Method;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +20,7 @@ public class Application {
 
 	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus"};
 //	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus", "Listing"};
+	private static int successCounter = 0;
 
 	@Autowired
 	private ApplicationContext context;
@@ -30,6 +33,8 @@ public class Application {
 	public CommandLineRunner run() throws Exception {
 		return args -> {
 
+			Object object = new Object();
+
 			for (String string : API_CLASS_NAMES) {
 
 				Class<?> clazz = Class.forName("hello." + string);
@@ -37,65 +42,35 @@ public class Application {
 				result.subscribe(entity -> {
 
 					String beanName = StringHelper.firstCharToLower(entity.getClass().getSimpleName() + "Repository");
+					Object beanObject = context.getBean(beanName);
 
-					MarketplaceRepository marketplaceRepository = null;
-					LocationRepository locationRepository = null;
-					ListingStatusRepository listingStatusRepository = null;
-					ListingRepository listingRepository = null;
+					try {
+						Method saveMethod = beanObject.getClass().getMethod("save", object.getClass());
+						saveMethod.invoke(beanObject, entity);
 
-					switch (string) {
-
-						case "Marketplace":
-							marketplaceRepository = (MarketplaceRepository) context.getBean(beanName);
-							break;
-						case "Location":
-							locationRepository = (LocationRepository) context.getBean(beanName);
-							break;
-						case "ListingStatus":
-							listingStatusRepository = (ListingStatusRepository) context.getBean(beanName);
-							break;
-						case "Listing":
-							listingRepository = (ListingRepository) context.getBean(beanName);
-							break;
-
-						default:
-							break;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 
-					if (null != marketplaceRepository) {
-						marketplaceRepository.save((Marketplace) entity);
-					} else if (null != locationRepository) {
-						locationRepository.save((Location) entity);
-					} else if (null != listingStatusRepository) {
-						listingStatusRepository.save((ListingStatus) entity);
-					} else if (null != listingRepository) {
-						listingRepository.save((Listing) entity);
-					}
-
-				});
-
-			}
-
-
-			for (Marketplace marketplace : ((MarketplaceRepository) context.getBean("marketplaceRepository")).findAll()) {
-				log.info(marketplace.toString());
-			}
-
-			for (Location location : ((LocationRepository) context.getBean("locationRepository")).findAll()) {
-				log.info(location.toString());
-			}
-
-			for (ListingStatus listingStatus : ((ListingStatusRepository) context.getBean("listingStatusRepository")).findAll()) {
-				log.info(listingStatus.toString());
-			}
-
-			for (Listing listing : ((ListingRepository) context.getBean("listingRepository")).findAll()) {
-				log.info(listing.toString());
+				}, Application::errorHandler, Application::completeHandler);
 			}
 
 //			for (String string : context.getBeanDefinitionNames()) {
 //				log.info(string);
 //			}
 		};
+	}
+
+	public static void errorHandler(Throwable throwable) {
+		throwable.printStackTrace();
+	}
+
+	public static void completeHandler() {
+
+		successCounter++;
+		if (successCounter == API_CLASS_NAMES.length) {
+			log.info("Save to database complete.");
+		}
 	}
 }
