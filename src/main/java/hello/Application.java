@@ -1,15 +1,11 @@
 package hello;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,51 +16,86 @@ import reactor.core.publisher.Flux;
 @EnableJpaRepositories
 public class Application {
 
+	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus"};
+//	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus", "Listing"};
+
 	@Autowired
 	private ApplicationContext context;
-
-//	@Autowired
-//	LocalContainerEntityManagerFactoryBean fb;
-//	EntityManager em = Persistence.createEntityManagerFactory("default").createEntityManager();
-//	@PersistenceContext
-//	EntityManager em;
 
 	public static void main(String args[]) {
 		SpringApplication.run(Application.class);
 	}
 
 	@Bean
-	public CommandLineRunner run(MarketplaceRepository repository) throws Exception {
+	public CommandLineRunner run() throws Exception {
 		return args -> {
-			log.info("hi");
-			Marketplace mp = new Marketplace(3, "Banggood");
-//			em.persist(mp);
-//			em.flush();
 
-			EntityManager em = ((EntityManagerFactory) context.getBean("entityManagerFactory")).createEntityManager();
-			em.getTransaction().begin();
-			em.persist(mp);
-			em.getTransaction().commit();
-			em.close();
+			for (String string : API_CLASS_NAMES) {
 
-			repository.save(new Marketplace(1, "Amazon"));
-			repository.save(new Marketplace(2, "Ebay"));
+				Class<?> clazz = Class.forName("hello." + string);
+			    Flux<?> result = MyRestPublisherBuilder.getFluxForApiClass(clazz);
+				result.subscribe(entity -> {
 
-			for (Marketplace marketplace : repository.findAll()) {
+					String beanName = StringHelper.firstCharToLower(entity.getClass().getSimpleName() + "Repository");
+
+					MarketplaceRepository marketplaceRepository = null;
+					LocationRepository locationRepository = null;
+					ListingStatusRepository listingStatusRepository = null;
+					ListingRepository listingRepository = null;
+
+					switch (string) {
+
+						case "Marketplace":
+							marketplaceRepository = (MarketplaceRepository) context.getBean(beanName);
+							break;
+						case "Location":
+							locationRepository = (LocationRepository) context.getBean(beanName);
+							break;
+						case "ListingStatus":
+							listingStatusRepository = (ListingStatusRepository) context.getBean(beanName);
+							break;
+						case "Listing":
+							listingRepository = (ListingRepository) context.getBean(beanName);
+							break;
+
+						default:
+							break;
+					}
+
+					if (null != marketplaceRepository) {
+						marketplaceRepository.save((Marketplace) entity);
+					} else if (null != locationRepository) {
+						locationRepository.save((Location) entity);
+					} else if (null != listingStatusRepository) {
+						listingStatusRepository.save((ListingStatus) entity);
+					} else if (null != listingRepository) {
+						listingRepository.save((Listing) entity);
+					}
+
+				});
+
+			}
+
+
+			for (Marketplace marketplace : ((MarketplaceRepository) context.getBean("marketplaceRepository")).findAll()) {
 				log.info(marketplace.toString());
+			}
+
+			for (Location location : ((LocationRepository) context.getBean("locationRepository")).findAll()) {
+				log.info(location.toString());
+			}
+
+			for (ListingStatus listingStatus : ((ListingStatusRepository) context.getBean("listingStatusRepository")).findAll()) {
+				log.info(listingStatus.toString());
+			}
+
+			for (Listing listing : ((ListingRepository) context.getBean("listingRepository")).findAll()) {
+				log.info(listing.toString());
 			}
 
 //			for (String string : context.getBeanDefinitionNames()) {
 //				log.info(string);
 //			}
-
-		    Flux<ListingStatus> result = MyRestPublisherBuilder.getFluxForApiClass(new ParameterizedTypeReference<ListingStatus>() {});
-			result.subscribe(Application::hadleResponse);
-//			log.info(result.block().toString());
 		};
-	}
-
-	private static void hadleResponse(ListingStatus ls) {
-		log.info(ls.toString());
 	}
 }

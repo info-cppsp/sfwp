@@ -1,7 +1,6 @@
 package hello;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,24 +18,24 @@ public final class MyRestPublisherBuilder {
 				.build();
 	}
 
-	public static <T> Flux<T> getFluxForApiClass(ParameterizedTypeReference<T> typeReference) {
+	public static <T> Flux<T> getFluxForApiClass(Class<T> clazz) {
 
 	    return createWebClient().get()
-	    		.uri("/" + getApiURIFromTypeReference(typeReference))
+	    		.uri("/" + getApiURIFromClass(clazz))
 	            .accept(MediaType.APPLICATION_JSON)
 	            .retrieve()
-	            .bodyToFlux(typeReference);
+	            .bodyToFlux(clazz);
 	}
 
-	public static <T> String getApiURIFromTypeReference(ParameterizedTypeReference<T> typeReference) {
+	public static <T> String getApiURIFromClass(Class<T> clazz) {
 
 		String ret = "";
-		String typeReferenceString = typeReference.getType().getTypeName();
-		int index = typeReferenceString.lastIndexOf(".");
+		String className = clazz.getTypeName();
+		int index = className.lastIndexOf(".");
 
 		if (index != -1) {
-			ret = typeReferenceString.substring(index + 1);
-			ret = ret.substring(0, 1).toLowerCase() + ret.substring(1);
+			ret = className.substring(index + 1);
+			ret = StringHelper.firstCharToLower(ret);
 		}
 
 		return ret;
