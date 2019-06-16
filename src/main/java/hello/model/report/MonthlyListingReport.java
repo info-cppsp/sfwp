@@ -1,6 +1,6 @@
-package hello.model;
+package hello.model.report;
 
-import hello.ArrayHelper;
+import hello.helper.ArrayHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

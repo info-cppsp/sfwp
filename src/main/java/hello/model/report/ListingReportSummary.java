@@ -1,4 +1,4 @@
-package hello.model;
+package hello.model.report;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import hello.ArrayHelper;
+import hello.helper.ArrayHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

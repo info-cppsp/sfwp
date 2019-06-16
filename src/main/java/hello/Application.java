@@ -17,7 +17,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import hello.model.ListingReportSummary;
+import hello.helper.StringHelper;
+import hello.model.report.ListingReportSummary;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
@@ -62,9 +63,6 @@ public class Application {
 				}, Application::errorHandler, Application::completeHandler);
 			}
 
-//			for (String string : context.getBeanDefinitionNames()) {
-//				log.info(string);
-//			}
 		};
 	}
 

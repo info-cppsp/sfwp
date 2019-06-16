@@ -1,4 +1,4 @@
-package hello.model;
+package hello.model.report;
 
 import java.math.BigDecimal;
 
