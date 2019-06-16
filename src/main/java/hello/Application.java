@@ -1,6 +1,8 @@
 package hello;
 
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -82,18 +84,22 @@ public class Application {
 
 			ListingReportSummary reportSummary = ListingReportSummary.generateFromObjectArrays((ArrayList<Object[]>) query.getResultList());
 
-			saveReportToFile(reportSummary);
+			try {
+				saveReportToFile(reportSummary);
+				MyFtpClient.uploadFile(new File("report.json"));
+				log.info("Successfully uploaded report.json to FTP...");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public static void saveReportToFile(ListingReportSummary reportSummary) {
+	public static void saveReportToFile(ListingReportSummary reportSummary) throws IOException {
 
 		try (FileWriter file = new FileWriter("report.json")) {
 			file.write(reportSummary.toJSONString());
 			log.info("Successfully wrote reportSummary JSON to File...");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }

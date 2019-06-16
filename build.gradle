@@ -35,6 +35,7 @@ dependencies {
     compile("com.h2database:h2")
     compile("org.hibernate:hibernate-entitymanager")
     compile("org.postgresql:postgresql")
+    compile("commons-net:commons-net:3.6")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
