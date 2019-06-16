@@ -1,8 +1,13 @@
 package hello;
 
+import java.io.FileWriter;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.StoredProcedureQuery;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import hello.model.ListingReportSummary;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
@@ -21,11 +27,10 @@ public class Application {
 	private static final String[] API_CLASS_NAMES = {"Marketplace", "Location", "ListingStatus", "Listing"};
 	private static int successCounter = 0;
 
-	@Autowired
-	private ApplicationContext context;
+	private static ApplicationContext context;
 
 	public static void main(String args[]) {
-		SpringApplication.run(Application.class);
+		context = SpringApplication.run(Application.class);
 	}
 
 	@Bean
@@ -70,6 +75,25 @@ public class Application {
 		successCounter++;
 		if (successCounter == API_CLASS_NAMES.length) {
 			log.info("Save to database complete.");
+
+			EntityManager em = ((EntityManagerFactory) context.getBean("entityManagerFactory")).createEntityManager();
+			StoredProcedureQuery query = em.createStoredProcedureQuery("generate_report");
+			query.execute();
+
+			ListingReportSummary reportSummary = ListingReportSummary.generateFromObjectArrays((ArrayList<Object[]>) query.getResultList());
+
+			saveReportToFile(reportSummary);
+		}
+	}
+
+	public static void saveReportToFile(ListingReportSummary reportSummary) {
+
+		try (FileWriter file = new FileWriter("report.json")) {
+			file.write(reportSummary.toJSONString());
+			log.info("Successfully wrote reportSummary JSON to File...");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

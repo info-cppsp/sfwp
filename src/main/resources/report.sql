@@ -187,12 +187,12 @@ create or replace function generate_report()
 		total_listing_count integer,
 
 		total_ebay_listing_count integer,
-		total_ebay_listing_price numeric(19,2),
-		average_ebay_listing_price numeric(19,2),
+		total_ebay_listing_price numeric,
+		average_ebay_listing_price numeric,
 
 		total_amazon_listing_count integer,
-		total_amazon_listing_price numeric(19,2),
-		average_amazon_listing_price numeric(19,2),
+		total_amazon_listing_price numeric,
+		average_amazon_listing_price numeric,
 
 		best_lister_email_address varchar(255)
 	)
@@ -203,12 +203,12 @@ begin
 		total_listing_count integer,
 
 		total_ebay_listing_count integer,
-		total_ebay_listing_price numeric(19,2),
-		average_ebay_listing_price numeric(19,2),
+		total_ebay_listing_price numeric,
+		average_ebay_listing_price numeric,
 
 		total_amazon_listing_count integer,
-		total_amazon_listing_price numeric(19,2),
-		average_amazon_listing_price numeric(19,2),
+		total_amazon_listing_price numeric,
+		average_amazon_listing_price numeric,
 
 		best_lister_email_address varchar(255)
 	);
